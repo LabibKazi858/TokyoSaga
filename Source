@@ -1,0 +1,515 @@
+repeat task.wait() until game:IsLoaded()
+
+getgenv().AutoProtein = false
+getgenv().AutoRepairBike = false
+getgenv().BottleJob = false
+getgenv().BottleJob2 = false
+
+------ NORMAL ---------
+getgenv().PushUp = false
+getgenv().Defense = false
+getgenv().Rope = false
+getgenv().Squat = false
+------- ADVANCE
+getgenv().AutoWeight = false
+getgenv().Calisthenics = false
+
+
+------ autofarm ------
+getgenv().AutofarmNerd = false
+getgenv().AutofarmBullies = false
+
+
+
+----------------------------------------
+
+local lp = game.Players.LocalPlayer
+local chr = lp.Character
+local hrp = chr:WaitForChild('HumanoidRootPart')
+local pname = lp.Name
+
+---------- anti afk ---------
+local Players = game:GetService("Players")
+local connections = getconnections or get_signal_cons or nil
+task.spawn(function()
+if connections then
+for a, b in next, connections(game:GetService('Players').LocalPlayer.Idled) do
+b:Disable()
+end
+else
+local vu = game:GetService("VirtualUser")
+game:GetService("Players").LocalPlayer.Idled:Connect(function()
+vu:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+wait(1)
+vu:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+end)
+end
+end)
+
+
+------------- Tweeen things -----------------
+
+local TweenService  = game:GetService("TweenService")
+local noclipE       = false
+local antifall      = false
+
+local function noclip()
+    for i, v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+        if v:IsA("BasePart") and v.CanCollide == true then
+            v.CanCollide = false
+            game.Players.LocalPlayer.Character.HumanoidRootPart.Velocity = Vector3.new(0,0,0)
+        end
+    end
+end
+
+local function moveto(obj, speed)
+    local info = TweenInfo.new(((game.Players.LocalPlayer.Character.HumanoidRootPart.Position - obj.Position).Magnitude)/ speed,Enum.EasingStyle.Linear)
+    local tween = TweenService:Create(game.Players.LocalPlayer.Character.HumanoidRootPart, info, {CFrame = obj})
+
+    if not game.Players.LocalPlayer.Character.HumanoidRootPart:FindFirstChild("BodyVelocity") then
+        antifall = Instance.new("BodyVelocity", game.Players.LocalPlayer.Character.HumanoidRootPart)
+        antifall.Velocity = Vector3.new(0,0,0)
+        noclipE = game:GetService("RunService").Stepped:Connect(noclip)
+        tween:Play()
+    end
+    tween.Completed:Connect(function()
+        antifall:Destroy()
+        noclipE:Disconnect()
+    end)
+end
+
+
+
+--------- Scripts ------------------------
+
+game.Players.PlayerRemoving:connect(function (plr)
+    if plr == game.Players.LocalPlayer then
+        game:GetService("TeleportService"):Teleport(game.PlaceId, game:GetService("Players").LocalPlayer)
+    end
+end)
+
+
+function equiptool(Tool)
+    local toolname = Tool
+    local Plr = game:GetService("Players").LocalPlayer
+    pcall(function()
+        if Plr.Backpack:FindFirstChild(toolname) and Plr.Character:FindFirstChild(toolname) == nil then
+            local tool = Plr.Backpack:FindFirstChild(toolname)
+            Plr.Character.Humanoid:EquipTool(tool)
+        end
+    end)
+end
+
+function RepairBikefunc()
+        spawn(function()
+            while task.wait() do
+                if getgenv().AutoRepairBike == true then
+                hrp.CFrame = CFrame.new(game:GetService("Workspace").JobsStuff["Quest Repair"].HumanoidRootPart.Position)
+                wait(1)
+                fireproximityprompt(game:GetService("Workspace").JobsStuff["Quest Repair"].ProximityPrompt, 5)
+                wait(1)
+                repeat
+                    hrp.CFrame = CFrame.new(game:GetService("Workspace").JobsStuff["Repair Bike"].Base.Position)
+                    fireproximityprompt(game:GetService("Workspace").JobsStuff["Repair Bike"].ProximityPrompt, 5)
+                    task.wait(13)
+                until not game:GetService("Players").LocalPlayer:FindFirstChild("BikeFixeds") or not getgenv().AutoRepairBike
+            end
+        end
+    end)
+end
+
+function protien()
+    spawn(function()
+        while task.wait() do
+            if getgenv().AutoProtein then
+                if game:GetService("Players").LocalPlayer:FindFirstChild("ProteinEXP") then
+                    repeat task.wait()
+                    until not game:GetService("Players").LocalPlayer:FindFirstChild("ProteinEXP")
+                else
+                    game:GetService("ReplicatedStorage"):WaitForChild("Quest"):WaitForChild("Protein"):FireServer()
+                    wait(300)
+                end
+            end
+        end
+    end)
+end
+
+function notired()
+    game:GetService("Players").LocalPlayer.Stats.Speed.Value = 28
+    wait(1)
+    game.Workspace.Characters:FindFirstChild(pname).Tired:remove()
+end
+
+function nohunger()
+    game:GetService("Players").LocalPlayer.Stats.Hungry.Value = 9e9
+end
+
+function BottleSell()
+    spawn(function()
+        if getgenv().BottleJob == true then
+            repeat task.wait()
+                hrp.CFrame = CFrame.new(game:GetService("Workspace").JobsStuff["Npc Bottlels Ilegal"].HumanoidRootPart.Position)
+                wait(1)
+                fireproximityprompt(game:GetService("Workspace").JobsStuff["Npc Bottlels Ilegal"].ProximityPrompt, 3)
+                wait(1)
+                hrp.CFrame = CFrame.new(-100.173393, 3.63750124, -49.2514496)
+                wait(1)
+                fireproximityprompt(game:GetService("Workspace").JobsStuff["Bottle Buyer"].ProximityPrompt, 3)
+                wait(2)
+            until not getgenv().BottleJob
+        end
+    end)
+end
+
+function WeirdBottleSell()
+    spawn(function()
+            if getgenv().BottleJob2 == true then
+            repeat task.wait()
+                hrp.CFrame = CFrame.new(332.2420654296875, 5.4896063804626465, 457.44525146484375)
+                fireproximityprompt(game:GetService("Workspace").JobsStuff.IlegalJob2.ProximityPrompt, 1)
+                wait(1)
+                hrp.CFrame = CFrame.new(346.76861572265625, 5.4896063804626465, 459.05206298828125)
+                fireproximityprompt(game:GetService("Workspace").JobsStuff["IllegaJob Thing AMasar"].Part.ProximityPrompt, 4)
+                wait(5)
+                hrp.CFrame = CFrame.new(486.7803039550781, 4.204827308654785, 1526.8935546875)
+                fireproximityprompt(game:GetService("Workspace").JobsStuff["Fresh Bottle Buyed"].ProximityPrompt, 2)
+                wait(1)
+                fireproximityprompt(game:GetService("Workspace").JobsStuff["Fresh Bottle Buyed"].ProximityPrompt, 2)
+            until not getgenv().BottleJob2
+        end
+    end)
+end
+
+function Calisthenics()
+    spawn(function()
+        if getgenv().Calisthenics == true then
+                        repeat task.wait()
+                        hrp.CFrame = CFrame.new(-99.9322, 3.70716, 547.5)
+                        equiptool("Calisthenics")
+                        local args = {[1] = game:GetService("Players").LocalPlayer.Character.Calisthenics}
+                        game:GetService("ReplicatedStorage"):WaitForChild("calisthenics"):FireServer(unpack(args))
+            until not getgenv().Calisthenics
+        end
+    end)
+end
+
+function Defense()
+    spawn(function()
+        if getgenv().Defense == true then
+                        repeat task.wait()
+                        hrp.CFrame = CFrame.new(-99.9322, 3.70716, 547.5)
+                        equiptool("Defense")
+                        local args = {[1] = game:GetService("Players").LocalPlayer.Character.Defense}
+                        game:GetService("ReplicatedStorage"):WaitForChild("Defense"):FireServer(unpack(args))
+            until not getgenv().Defense
+        end
+    end)
+end
+
+function Squat()
+    spawn(function()
+        if getgenv().Squat == true then
+                        repeat task.wait()
+                        hrp.CFrame = CFrame.new(-99.9322, 3.70716, 547.5)
+                        equiptool("Squat")
+                        local args = {[1] = game:GetService("Players").LocalPlayer.Character.Squat}
+                        game:GetService("ReplicatedStorage"):WaitForChild("Squat"):FireServer(unpack(args))
+            until not getgenv().Squat
+        end
+    end)
+end
+
+
+function autopushup()
+    spawn(function()
+        if getgenv().PushUp == true then
+                    hrp.CFrame = CFrame.new(-99.9322, 3.70716, 547.5)
+                        repeat task.wait()
+                        equiptool("Strength")
+                    local args = {[1] = game:GetService("Players").LocalPlayer.Character.Strength}
+                game:GetService("ReplicatedStorage"):WaitForChild("Pushup"):FireServer(unpack(args))
+            until not getgenv().PushUp
+        end
+    end)
+end
+
+function Rope()
+    spawn(function()
+        if getgenv().Rope == true then
+                        repeat task.wait()
+                        hrp.CFrame = CFrame.new(-99.9322, 3.70716, 547.5)
+                        equiptool("Jump Rope")
+                        local args = {[1] = game:GetService("Players").LocalPlayer.Character:FindFirstChild("Jump Rope")}
+                        game:GetService("ReplicatedStorage"):WaitForChild("Stamina"):FireServer(unpack(args))
+            until not getgenv().Rope
+        end
+    end)
+end
+
+function AdvanceDefense()
+    spawn(function()
+        if getgenv().AdvanceDefense == true then
+                repeat task.wait()
+                hrp.CFrame = CFrame.new(-99.9322, 3.70716, 547.5)
+                equiptool("Advance Defense")
+                local args = {[1] = game:GetService("Players").LocalPlayer.Character:WaitForChild("Backpack"):WaitForChild("Advance Defense")}
+                game:GetService("ReplicatedStorage"):WaitForChild("AdvDefense"):FireServer(unpack(args))
+            until not getgenv().AdvanceDefense
+        end
+    end)
+end
+
+function AutoWeight(Weight , FireWeight)
+    spawn(function()
+        while task.wait() do
+            if getgenv().AutoWeight == true then
+                hrp.CFrame = CFrame.new(-99.9322, 3.70716, 547.5)
+                    repeat task.wait()
+                        equiptool(Weight)
+                        local args = {
+                        [1] = game:GetService("Players").LocalPlayer.Character:FindFirstChild(Weight)
+                        }
+                        game:GetService("ReplicatedStorage"):WaitForChild(FireWeight):FireServer(unpack(args))      
+                    until not getgenv().AutoWeight
+                end
+            end
+        end)
+    end
+
+function ShowHitBox()
+    Workspace.DescendantAdded:Connect(function(descendant)
+        local name = descendant.Name:lower()
+        local Path = descendant:GetFullName()
+        if name:find("hitbox") then
+            descendant.Transparency = 0.9
+        end
+    end)
+end
+
+
+
+--------------------------------------------- GUI ------------------------------------------------------------------------
+
+
+local SolarisLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/sol"))()
+
+local win = SolarisLib:New({
+  Name = "SWAG HUB | TOKYO SAGA",
+  FolderToSave = "SWAGHUB"
+})
+
+
+local Main = win:Tab("Main")
+local Farm = win:Tab("Farming")
+local Setting = win:Tab("Settings")
+
+
+local MainSection = Main:Section("Main")
+local AutofarmSection = Main:Section("Autofarm NPC")
+local JobSection = Main:Section("JobFarm")
+local TeleportSection = Main:Section("Teleport")
+
+
+local FarmMainSection = Farm:Section("Main")
+local NormalSection = Farm:Section("Normal")
+local AdvanceSection = Farm:Section("Advance")
+
+
+
+local SettingSection = Setting:Section("MainSettings")
+
+
+
+---------------- Buttons and Toggles ---------------
+
+------------ MAIN SECTION
+MainSection:Button("Show Hit Box", function()
+    ShowHitBox()
+end)
+
+
+MainSection:Button("Never Get Hungry", function()
+    nohunger()
+end)
+
+MainSection:Button("Max Speed + No Tired", function()
+    notired()
+end)
+
+local toggle = MainSection:Toggle("Free Auto Protine", false,"Toggle", function(bool)
+    getgenv().AutoProtein = bool
+    if bool then
+        getgenv().AutoProtein = true
+        protien()
+    end
+end)
+
+
+-------------------- AUTO FARM NPC SECTION --------------
+
+
+------- JOB SECTION ----------------
+local toggle = JobSection:Toggle("AutoFarm Repair Bike", false,"Toggle", function(bool)
+    getgenv().AutoRepairBike = bool
+    if bool then
+        getgenv().AutoRepairBike = true
+        RepairBikefunc()
+    end
+end)
+
+local toggle = JobSection:Toggle("AutoFarm Bottle 2", false,"Toggle", function(bool)
+    getgenv().BottleJob2 = bool
+    if bool then
+        getgenv().BottleJob2 = true
+        WeirdBottleSell()
+    end
+end)
+
+local toggle = JobSection:Toggle("Bottle Sell", false,"Toggle", function(bool)
+    getgenv().BottleJob = bool
+    if bool then
+        getgenv().BottleJob = true
+        BottleSell()
+    end
+end)
+
+----------- Strength Section ----------------
+
+local toggle = FarmMainSection:Toggle("Check Status", false,"Toggle", function(bool)
+    game:GetService("Players").LocalPlayer.PlayerGui.CheckStats.Frame.Visible = bool
+end)
+
+local toggle = FarmMainSection:Toggle("Check Therapy", false,"Toggle", function(bool)
+    game:GetService("Players").LocalPlayer.PlayerGui.CheckStats.Therapy.Visible = bool
+end)
+
+local toggle = FarmMainSection:Toggle("Check Police Stats", false,"Toggle", function(bool)
+    game:GetService("Players").LocalPlayer.PlayerGui.CheckStats["Police Stats"].Visible = bool
+end)
+
+
+
+
+local toggle = NormalSection:Toggle("Auto PushUp", false,"Toggle", function(bool)
+    getgenv().PushUp = bool
+    if bool then
+        getgenv().PushUp = true
+        autopushup()
+    end
+end)
+
+local toggle = NormalSection:Toggle("Auto Defence", false,"Toggle", function(bool)
+    getgenv().Defense = bool
+    if bool then
+        getgenv().Defense = true
+        Defense()
+    end
+end)
+
+local toggle = NormalSection:Toggle("Auto Rope", false,"Toggle", function(bool)
+    getgenv().Rope = bool
+    if bool then
+        getgenv().Rope = true
+        Rope()
+    end
+end)
+
+local toggle = NormalSection:Toggle("Auto Squat", false,"Toggle", function(bool)
+    getgenv().Squat = bool
+    if bool then
+        getgenv().Squat = true
+        Squat()
+    end
+end)
+
+
+--------- ADVANCE TOOLS ---------------
+local toggle = AdvanceSection:Toggle("5KG Weight", false,"Toggle", function(bool)
+    getgenv().AutoWeight = bool
+    if bool then
+        getgenv().AutoWeight = true
+        AutoWeight("Weight 5KG","Weight5KG")
+    end
+end)
+
+local toggle = AdvanceSection:Toggle("10KG Weight", false,"Toggle", function(bool)
+    getgenv().AutoWeight = bool
+    if bool then
+        getgenv().AutoWeight = true
+        AutoWeight("Weight 10KG","Weight10KG")
+    end
+end)
+
+local toggle = AdvanceSection:Toggle("25KG Weight", false,"Toggle", function(bool)
+    getgenv().AutoWeight = bool
+    if bool then
+        getgenv().AutoWeight = true
+        AutoWeight("Weight 25KG","Weight25KG")
+    end
+end)
+
+local toggle = AdvanceSection:Toggle("70KG Weight", false,"Toggle", function(bool)
+    getgenv().AutoWeight = bool
+    if bool then
+        getgenv().AutoWeight = true
+        AutoWeight("Weight 70KG","Weight70KG")
+    end
+end)
+
+local toggle = AdvanceSection:Toggle("100KG Weight", false,"Toggle", function(bool)
+    getgenv().AutoWeight = bool
+    if bool then
+        getgenv().AutoWeight = true
+        AutoWeight("Weight 100KG","Weight100KG")
+    end
+end)
+
+local toggle = AdvanceSection:Toggle("Auto Calisthenics", false,"Toggle", function(bool)
+    getgenv().Calisthenics = bool
+    if bool then
+        getgenv().Calisthenics = true
+        Calisthenics()
+    end
+end)
+
+local toggle = AdvanceSection:Toggle("Auto ADVANCE DEFANSE", false,"Toggle", function(bool)
+    getgenv().AdvanceDefense = bool
+    if bool then
+        getgenv().AdvanceDefense = true
+        AdvanceDefense()
+    end
+end)
+
+----------- Teleport Section -------------
+TeleportSection:Button("Local Gym", function()
+    hrp.CFrame = CFrame.new(-112.81005859375, 3.707155466079712, 552.3133544921875)
+end)
+
+TeleportSection:Button("Mall", function()
+    hrp.CFrame = CFrame.new(471.2108154296875, 3.689018964767456, 201.377685546875)
+end)
+
+TeleportSection:Button("Cloth Store", function()
+    hrp.CFrame = CFrame.new(463.0459289550781, 3.5122146606445312, 1023.5986328125)
+end)
+
+TeleportSection:Button("Hospital", function()
+    hrp.CFrame = CFrame.new(179.55197143554688, 3.743572235107422, 546.5083618164062)
+end)
+
+TeleportSection:Button("MotorCycle Shop", function()
+    hrp.CFrame = CFrame.new(191.78533935546875, 3.8496336936950684, -74.36536407470703)
+end)
+
+TeleportSection:Button("Gym",function()
+    hrp.CFrame = CFrame.new(351.5355529785156, 4.3175835609436035, 244.4977264404297)
+end)
+
+------------- Settings Section ----------
+SettingSection:Button("Rejoin", function()
+    game:GetService("TeleportService"):Teleport(game.PlaceId, game:GetService("Players").LocalPlayer)
+end)
+SettingSection:Button("Server Hop", function()
+    game:GetService("TeleportService"):Teleport(7285447838, game:GetService("Players").LocalPlayer)
+end)
+
